@@ -1,0 +1,177 @@
+# Programming Ability and Logic Building - Experiment Solutions
+
+
+from typing import List
+
+# 1. Kth Smallest Element
+def kth_smallest(arr: List[int], k: int) -> int:
+    return sorted(arr)[k - 1]
+
+
+# 2. Minimize the Heights
+def minimize_heights(arr: List[int], k: int) -> int:
+    arr.sort()
+    n = len(arr)
+    ans = arr[-1] - arr[0]
+    small = arr[0] + k
+    big = arr[-1] - k
+    if small > big:
+        small, big = big, small
+    for i in range(1, n - 1):
+        subtract = arr[i] - k
+        add = arr[i] + k
+        if subtract >= small or add <= big:
+            continue
+        if big - subtract <= add - small:
+            small = subtract
+        else:
+            big = add
+    return min(ans, big - small)
+
+
+# 3. Minimum Number of Jumps
+def min_jumps(arr: List[int]) -> int:
+    n = len(arr)
+    if n <= 1:
+        return 0
+    if arr[0] == 0:
+        return -1
+    jumps = 1
+    maxReach = arr[0]
+    steps = arr[0]
+    for i in range(1, n):
+        if i == n - 1:
+            return jumps
+        maxReach = max(maxReach, i + arr[i])
+        steps -= 1
+        if steps == 0:
+            jumps += 1
+            if i >= maxReach:
+                return -1
+            steps = maxReach - i
+    return -1
+
+
+# 4. Find Duplicate Number (Floyd’s Cycle)
+def find_duplicate(nums: List[int]) -> int:
+    slow = fast = nums[0]
+    while True:
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+        if slow == fast:
+            break
+    slow = nums[0]
+    while slow != fast:
+        slow = nums[slow]
+        fast = nums[fast]
+    return slow
+
+
+# 5. Merge Two Sorted Arrays Without Extra Space
+def merge_arrays(a: List[int], b: List[int]) -> None:
+    n, m = len(a), len(b)
+    gap = (n + m + 1) // 2
+    while gap > 0:
+        i = 0
+        j = gap
+        while j < n + m:
+            if j < n and a[i] > a[j]:
+                a[i], a[j] = a[j], a[i]
+            elif j >= n and i < n and a[i] > b[j - n]:
+                a[i], b[j - n] = b[j - n], a[i]
+            elif i >= n and b[i - n] > b[j - n]:
+                b[i - n], b[j - n] = b[j - n], b[i - n]
+            i += 1
+            j += 1
+        gap = 0 if gap == 1 else (gap + 1) // 2
+
+
+# 6. Merge Intervals
+def merge_intervals(intervals: List[List[int]]) -> List[List[int]]:
+    intervals.sort()
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+
+
+# 7. Common Elements in Three Sorted Arrays
+def common_elements(a: List[int], b: List[int], c: List[int]) -> List[int]:
+    i = j = k = 0
+    result = []
+    while i < len(a) and j < len(b) and k < len(c):
+        if a[i] == b[j] == c[k]:
+            if not result or result[-1] != a[i]:
+                result.append(a[i])
+            i += 1; j += 1; k += 1
+        else:
+            minimum = min(a[i], b[j], c[k])
+            if a[i] == minimum: i += 1
+            elif b[j] == minimum: j += 1
+            else: k += 1
+    return result if result else [-1]
+
+
+# 8. Factorial of Large Number
+def factorial_large(n: int) -> List[int]:
+    res = [1]
+    for x in range(2, n + 1):
+        carry = 0
+        for i in range(len(res)):
+            prod = res[i] * x + carry
+            res[i] = prod % 10
+            carry = prod // 10
+        while carry:
+            res.append(carry % 10)
+            carry //= 10
+    return res[::-1]
+
+
+# 9. Array Subset
+def is_subset(a: List[int], b: List[int]) -> bool:
+    from collections import Counter
+    count_a = Counter(a)
+    count_b = Counter(b)
+    for key in count_b:
+        if count_b[key] > count_a[key]:
+            return False
+    return True
+
+
+# 10. Triplet Sum
+def triplet_sum(arr: List[int], target: int) -> bool:
+    arr.sort()
+    n = len(arr)
+    for i in range(n - 2):
+        l, r = i + 1, n - 1
+        while l < r:
+            s = arr[i] + arr[l] + arr[r]
+            if s == target:
+                return True
+            elif s < target:
+                l += 1
+            else:
+                r -= 1
+    return False
+
+
+# 11. Trapping Rain Water
+def trap_rain_water(arr: List[int]) -> int:
+    n = len(arr)
+    if n == 0:
+        return 0
+    left_max = [0] * n
+    right_max = [0] * n
+    left_max[0] = arr[0]
+    for i in range(1, n):
+        left_max[i] = max(left_max[i - 1], arr[i])
+    right_max[n - 1] = arr[n - 1]
+    for i in range(n - 2, -1, -1):
+        right_max[i] = max(right_max[i + 1], arr[i])
+    water = 0
+    for i in range(n):
+        water += min(left_max[i], right_max[i]) - arr[i]
+    return water
