@@ -1,6 +1,4 @@
-# ==============================
-# WEEK 1
-# ==============================
+
 
 # 1. Reverse an Array (In-place)
 def reverse_array(arr):
