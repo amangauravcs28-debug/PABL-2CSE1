@@ -1,8 +1,5 @@
 
 
-
-from typing import List
-
 # 1. Kth Smallest Element
 def kth_smallest(arr: List[int], k: int) -> int:
     return sorted(arr)[k - 1]
